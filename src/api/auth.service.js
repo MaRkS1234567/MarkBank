@@ -1,5 +1,6 @@
 import { markQuery } from "@/core/mark-query/mark-query.lib"
 import { NotificationService } from "@/core/services/notification.service"
+import { StorageService } from "@/core/services/storage.service"
 import { Store } from "@/core/store/store"
 
 export class AuthService {
@@ -8,6 +9,7 @@ export class AuthService {
     constructor(){
         this.store = Store.getInstance()
         this.notificationService = new NotificationService()
+        this.storageService = new StorageService()
     }
 
     main(type, body){
