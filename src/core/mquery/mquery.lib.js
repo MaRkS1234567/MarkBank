@@ -2,7 +2,7 @@
  * Represent the MQuery class for working with DOM elements
  */
 
-import { formatCardNumberDashes } from "@/utils/format/format-card-number"
+import { formatCardNumberWithDashes } from "@/utils/format/format-card-number"
 
 
 class MQuery {
@@ -40,6 +40,18 @@ class MQuery {
             throw new Error(`Element ${element} not found!`)
         }
     }
+
+    /**
+     * Find all elements that match the specified selector within the selected element. 
+     * @param {string} selector - A CSS selector string to search for within the selected element. 
+     * @returns {MQuery[]} An array of new MQuey instance for the found elements.  
+     */
+    findAll(selector) {
+        const elements = this.element.querySelectorAll(selector)
+        return Array.from(elements).map(element => new MQuery(element))
+    }
+
+    /* INSERT */
 
     /**
      * Append a new element as a child of the selected element.
@@ -101,6 +113,22 @@ class MQuery {
         }
     }
 
+    /* FORM */
+
+    /**
+     * Gets ot sets the value of input element. 
+     * @param {string} [newValue] - The new value to set for the input element. 
+     * @returns {string|MQuery} - If newValue id provided , returns the MQuery instance. Otherwise, returns the current value.  
+     */
+    value(newValue){
+        if (typeof newValue === 'undefined') {
+            return this.element.value
+        } else {
+            this.element.value = newValue
+            return this
+        }
+    }
+
     /**
      * Set an event listener for the submit event of a form element. 
      * @param {function(Event): void} onSubmit - The event listener for the form submit event. 
@@ -119,8 +147,23 @@ class MQuery {
         return this
     }
 
-
+  
 	/* EVENTS */
+
+    /**
+     * Add an event listener tto the selected element for the specified event type. 
+     * @param {string} eventType - The type of event to listen for (e. g. , 'click', 'input'). 
+     * @param {function(Event)} callback - The event listener function to execute when the event id triggered. 
+     * @returns {MQuery} The current MQuery instance for chaining. 
+     */
+    on(eventType, callback){
+        if(typeof eventType != 'string' || typeof callback != 'function'){
+            throw new Error('event must be a string and callback must be a function')
+        }
+
+        this.element.addEventListener(eventType, callback)
+        return this
+    }
 
 	/**
 	 * Attach a click event listener to the selected element.
@@ -284,14 +327,29 @@ class MQuery {
             return this
         }
     }
+
+    /**
+     * Removes an attributes from the current element/ 
+     * @param {string} attrName - The name of the attribute to remove. 
+     * @returns {MQuery} - Returns the MQuery instance. 
+     */
+    removeAttr(attrName){
+        if(typeof attrName != 'string'){
+            throw new Error('attrName must be a string')
+        }
+
+        this.element.removeAttribute(attrName)
+        return this
+    }
 }
+
+
 
 /**
  * Create a new MQuery instance for the given selector.
  * @param {string|HTMLElement} selector - A CSS selector string or an html.
  * @returns {MQuery} A new MQuery instance for the given selector.
  */
-
 export function $M(selector){
     return new MQuery(selector)
 }

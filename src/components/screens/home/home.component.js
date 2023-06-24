@@ -7,14 +7,15 @@ import { Button } from "@/components/ui/button/button.component";
 import { Field } from "@/components/ui/field/field.component";
 import { Heading } from "@/components/ui/heading/heading.component";
 import { UserItem } from "@/components/ui/user-item/user-item.component";
+import { CardInfo } from "./card-info/card-info.component";
+import { Actions } from "./actions/actions.component";
 
 export class Home extends BaseScreen {
     constructor(){
         super({title: 'Home'})
     }
     render(){
-        const element = RenderService.htmlToElement(template, [
-        ], styles)
+        const element = RenderService.htmlToElement(template, [CardInfo, Actions], styles)
 
         // $M(element).find('h1').css('color', 'green')
         

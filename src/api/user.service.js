@@ -7,10 +7,10 @@ export class UserService {
         return markQuery({
             path: `${this.#BASE_URL}${
                 searchTerm
-                ? + `?${new URLSearchParams({
-                        searchTerm
-                    })}` 
-                : ''
+                    ? `?${new URLSearchParams({
+                            searchTerm
+                        })}` 
+                    : ''
             }`,
             onSuccess
         })
