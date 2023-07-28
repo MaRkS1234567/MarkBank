@@ -1,43 +1,45 @@
-import ChildComponent from "@/core/component/child-screen.component";import RenderService from "@/core/services/render.service";
-import template from './user-item.template.html'
+import ChildComponent from '@/core/component/child.component'
+import { $M } from '@/core/rquery/rquery.lib'
+import renderService from '@/core/services/render.service'
+
 import styles from './user-item.module.scss'
-import { $M } from "@/core/mquery/mquery.lib";
+import template from './user-item.template.html'
 
 export class UserItem extends ChildComponent {
-    constructor(user, isGray = false, onClick){
-        super()
-        
-        if(!user) throw new Error('User should be passed')
-        if(!user?.name) throw new Error('User must have a name')
-        if(!user?.avatarPath) throw new Error('User must have a avatarPath')
+	constructor(user, isGray = false, onClick) {
+		super()
 
-        this.user = user
-        this.onClick = onClick
-        this.isGray = isGray
-    }
+		if (!user) throw new Error('User should be passed!')
+		if (!user?.name) throw new Error('User must have a "name"!')
+		if (!user?.avatarPath) throw new Error('User must have a "avatarPath"!')
 
-    #preventDefault(event) {
-        event.preventDefault()
-    }
+		this.user = user
+		this.onClick = onClick
+		this.isGray = isGray
+	}
 
-    update({avatarPath, name}){
-        if(avatarPath && name){
-            $M(this.element).find('img').attr('src', avatarPath).attr('alt', name)
+	#preventDefault(event) {
+		event.preventDefault()
+	}
 
-            $M(this.element).find('span').text(name)
-        }
-    }
+	update({ avatarPath, name }) {
+		if (avatarPath && name) {
+			$M(this.element).find('img').attr('src', avatarPath).attr('alt', name)
 
-    render(){
-        this.element = RenderService.htmlToElement(template, [], styles);
+			$M(this.element).find('span').text(name)
+		}
+	}
 
-        this.update(this.user)
+	render() {
+		this.element = renderService.htmlToElement(template, [], styles)
 
-        $M(this.element).click(this.onClick || this.#preventDefault.bind(this))
+		this.update(this.user)
 
-        if(!this.onClick) $M(this.element).attr('disabled', '')
-        if(this.isGray) $M(this.element).addClass(styles.gray)
+		$M(this.element).click(this.onClick || this.#preventDefault.bind(this))
 
-        return this.element;
-    }
+		if (!this.onClick) $M(this.element).attr('disabled', '')
+		if (this.isGray) $M(this.element).addClass(styles.gray)
+
+		return this.element
+	}
 }

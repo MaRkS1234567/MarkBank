@@ -1,92 +1,96 @@
-import ChildComponent from "../component/child-screen.component"
+import ChildComponent from '../component/child.component'
 
 class RenderService {
+	/**
+	 * @param {string} html
+	 * @param {Array} components
+	 * @param {Object} [styles]
+	 * @returns {HTMLElement}
+	 */
+	htmlToElement(html, components = [], styles) {
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(html, 'text/html')
+		const element = doc.body.firstChild
 
-    /**
-     * @param {string} html
-     * @param {Array} components
-     * @param {Object} [styles]
-     * @returns {HTMLElement}
-     */
+		if (styles) {
+			this.#applyModuleStyles(styles, element)
+		}
 
-    htmlToElement(html, components = [], styles){
-        const template  = document.createElement('template')
-        template.innerHTML = html.trim()
+		this.#replaceComponentTags(element, components)
 
-        const element = template.content.firstChild
-        console.log(element)
+		return element
+	}
 
-        if(styles) {
-            this.#applyModuleStyles(styles, element)
-        }
+	/**
+	 * @param {HTMLElement} parentElement
+	 * @param {Array} components
+	 */
+	#replaceComponentTags(parentElement, components) {
+		const componentTagPattern = /^component-/
+		const allElements = parentElement.getElementsByTagName('*')
 
-        this.#replaceComponentTags(element, components)
+		for (const element of allElements) {
+			const elementTagName = element.tagName.toLowerCase()
+			if (componentTagPattern.test(elementTagName)) {
+				const componentName = elementTagName
+					.replace(componentTagPattern, '')
+					.replace(/-/g, '')
 
-        return element
-    }
+				const foundComponent = components.find(Component => {
+					const instance =
+						Component instanceof ChildComponent ? Component : new Component()
 
-    /**
-     * @param {HTMLElement} parentElement 
-     * @param {Array} components 
-     */
+					return instance.constructor.name.toLowerCase() === componentName
+				})
 
-    #replaceComponentTags(parentElement, components){
-        const componentTagPattern = /^component-/
-        const allElements = parentElement.getElementsByTagName('*')
+				if (foundComponent) {
+					const componentContent =
+						foundComponent instanceof ChildComponent
+							? foundComponent.render()
+							: new foundComponent().render()
+					element.replaceWith(componentContent)
+				} else {
+					console.error(
+						`Component "${componentName}" not found in the provided components array.`
+					)
+				}
+			}
+		}
+	}
 
-        for (const element of allElements) {
-            const elementTagName = element.tagName.toLowerCase()
-            if(componentTagPattern.test(elementTagName)){
-                const componentName = elementTagName
-                    .replace(componentTagPattern, '')
-                    .replace(/-/g, '')
+	/**
+	 * @param {Object} moduleStyles
+	 * @param {string} element
+	 * @returns {void}
+	 */
+	#applyModuleStyles(moduleStyles, element) {
+		if (!element) return
 
-                const foundComponent = components.find(Component => {
-                    const instance =
-                        Component instanceof ChildComponent ? Component : new Component()
+		const applyStyles = element => {
+			for (const [key, value] of Object.entries(moduleStyles)) {
+				if (element.classList.contains(key)) {
+					element.classList.remove(key)
+					element.classList.add(value)
+				}
+			}
+		}
 
-                    return instance.constructor.name.toLowerCase() === componentName
-                })
+		if (element.getAttribute('class')) {
+			applyStyles(element)
+		}
 
-                if(foundComponent) {
-                    const componentContent = 
-                        foundComponent instanceof ChildComponent
-                            ? foundComponent.render()
-                            : new foundComponent().render()
-                    element.replaceWith(componentContent)
-                } else {
-                    console.error(
-                        `Component "${componentName}" not found in the provided components array.`
-                    )
-                }
-            }
-        }
-    }
-
-    /**
-     * @param {Object} moduleStyles
-     * @param {string} element
-     * @returns {void}
-     */
-
-    #applyModuleStyles(moduleStyles, element){
-        if(!element) return
-        
-        const applyStyles = element => {
-            for(const [key, value] of Object.entries(moduleStyles)){
-                if(element.classList.contains(key)){
-                    element.classList.remove(key)
-                    element.classList.add(value)
-                }
-            }
-        }
-        if(element.getAttribute('class')){
-            applyStyles(element)
-        }
-        const elements = element.querySelectorAll('*')
-        elements.forEach(applyStyles)
-    }
-
-
+		const elements = element.querySelectorAll('*')
+		elements.forEach(applyStyles)
+	}
 }
+
 export default new RenderService()
+
+{
+	/* <div class='home'>
+	<h1 class='text'></h1>
+	<component-heading></component-heading>
+	<component-card-info></component-card-info>
+</div>
+ */
+}

@@ -19,7 +19,7 @@ import { ACCESS_TOKEN_KEY } from '@/constants/auth.constants'
  * @param {Function} [options.onError=null] - Callback function to be called on error response.
  * @returns {Promise<{isLoading: boolean, error: string|null, data: any|null}>} - An object containing the loading state, error, and data from the response.
  */
-export async function markQuery({
+export async function redQuery({
 	path,
 	body = null,
 	headers = {},
@@ -75,6 +75,8 @@ export async function markQuery({
 		if (onError) {
 			onError(errorMessage)
 		}
+
+		new NotificationService().show('error', errorMessage)
 	} finally {
 		isLoading = false
 	}

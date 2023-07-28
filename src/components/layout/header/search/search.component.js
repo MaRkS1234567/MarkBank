@@ -1,19 +1,25 @@
-import ChildComponent from "@/core/component/child-screen.component";
-import RenderService from "@/core/services/render.service";
-import template from './search.template.html'
+import ChildComponent from '@/core/component/child.component'
+import { $M } from '@/core/rquery/rquery.lib'
+import renderService from '@/core/services/render.service'
+
+import { TRANSFER_FIELD_SELECTOR } from '@/components/screens/home/contacts/transfer-field/transfer-field.component'
+import { UserItem } from '@/components/ui/user-item/user-item.component'
+
+import { debounce } from '@/utils/debounce.util'
+import { formatCardNumberWithDashes } from '@/utils/format/format-card-number'
+
+import { UserService } from '@/api/user.service'
+
 import styles from './search.module.scss'
-import { $M } from "@/core/mquery/mquery.lib";
-import { UserService } from "@/api/user.service";
-import { UserItem } from "@/components/ui/user-item/user-item.component";
-import { debounce } from "@/utils/debounce.util";
+import template from './search.template.html'
 
 export class Search extends ChildComponent {
-    constructor(){
-        super()
-        this.userService = new UserService()
-    }
+	constructor() {
+		super()
+		this.userService = new UserService()
+	}
 
-    #handleSearch = async event => {
+	#handleSearch = async event => {
 		const searchTerm = event.target.value
 		const searchResultElement = $M(this.element).find('#search-results')
 
@@ -27,6 +33,10 @@ export class Search extends ChildComponent {
 
 			users.forEach((user, index) => {
 				const userItem = new UserItem(user, true, () => {
+					$M(TRANSFER_FIELD_SELECTOR).value(
+						formatCardNumberWithDashes(user.card.number)
+					)
+
 					searchResultElement.html('')
 				}).render()
 
@@ -43,12 +53,12 @@ export class Search extends ChildComponent {
 		})
 	}
 
-    render(){
-        this.element = RenderService.htmlToElement(template, [], styles);
+	render() {
+		this.element = renderService.htmlToElement(template, [], styles)
 
-        const debouncedHandleSearch = debounce(this.#handleSearch, 300)
+		const debouncedHandleSearch = debounce(this.#handleSearch, 300)
 
-        $M(this.element)
+		$M(this.element)
 			.find('input')
 			.input({
 				type: 'search',
@@ -57,6 +67,6 @@ export class Search extends ChildComponent {
 			})
 			.on('input', debouncedHandleSearch)
 
-        return this.element;
-    }
+		return this.element
+	}
 }

@@ -1,20 +1,19 @@
 class FormService {
+	/**
+	 * Retrieves the values of input elements within a form element.
+	 * @param {HTMLFormElement} formElement - The form element containing input elements.
+	 * @returns {object} An object containing the input element's name as the key and its value as the value.
+	 */
+	getFormValues(formElement) {
+		const inputs = formElement.querySelectorAll('input')
+		const values = {}
 
-    /**
-     * Retrieves the values of input elements within a form element. 
-     * @param {HTMLFormElement} formElement - the form element containing input elements. 
-     * @returns {object} An object containing the input elements name as the key its value as the value.  
-     */
-    getFormValues(formElement){
-        const inputs = formElement.querySelectorAll('input')
-        const values = {}
+		for (const input of inputs) {
+			values[input.name] = input.value
+		}
 
-        for (const input of inputs) {
-            values[input.name] = input.value
-        }
-
-        return values
-    }
+		return values
+	}
 }
 
 export default new FormService()

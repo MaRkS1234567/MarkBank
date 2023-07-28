@@ -1,18 +1,18 @@
-import { markQuery } from "@/core/mark-query/mark-query.lib"
+import { redQuery } from '@/core/red-query/red-query.lib'
 
 export class UserService {
-    #BASE_URL = '/users'
+	#BASE_URL = '/users'
 
-    getAll(searchTerm, onSuccess) {
-        return markQuery({
-            path: `${this.#BASE_URL}${
-                searchTerm
-                    ? `?${new URLSearchParams({
-                            searchTerm
-                        })}` 
-                    : ''
-            }`,
-            onSuccess
-        })
-    }
+	getAll(searchTerm, onSuccess) {
+		return redQuery({
+			path: `${this.#BASE_URL}${
+				searchTerm
+					? `?${new URLSearchParams({
+							searchTerm
+					  })}`
+					: ''
+			}`,
+			onSuccess
+		})
+	}
 }

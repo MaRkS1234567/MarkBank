@@ -1,7 +1,7 @@
-@import 'src/styles/_variables.scss';
+@import 'src/styles/variables';
 
-.home{
-    display: grid;
-    grid-template-columns: 2.2fr 1fr;
-    gap: $gap
+.home {
+	display: grid;
+	grid-template-columns: 2.2fr 1fr;
+	gap: $gap;
 }

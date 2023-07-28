@@ -1,87 +1,92 @@
-import ChildComponent from "@/core/component/child-screen.component";
-import RenderService from "@/core/services/render.service";
-import template from './auth.template.html'
+import { BaseScreen } from '@/core/component/base-screen.component'
+import { $M } from '@/core/rquery/rquery.lib'
+import formService from '@/core/services/form.service'
+import renderService from '@/core/services/render.service'
+import validationService from '@/core/services/validation.service'
+
+import { Button } from '@/components/ui/button/button.component'
+import { Field } from '@/components/ui/field/field.component'
+
+import { AuthService } from '@/api/auth.service'
+
 import styles from './auth.module.scss'
-import { $M } from "@/core/mquery/mquery.lib";
-import { BaseScreen } from "@/core/component/base-screen.component";
-import { Heading } from "@/components/ui/heading/heading.component";
-import { Button } from "@/components/ui/button/button.component";
-import { Field } from "@/components/ui/field/field.component";
-import formService from "@/core/services/form.service";
-import { AuthService } from "@/api/auth.service";
-import validationService from "@/core/services/validation.service";
+import template from './auth.template.html'
 
 export class Auth extends BaseScreen {
-    #isTypeLogin = true
+	#isTypeLogin = true
 
-    constructor(title){
-        super({title: 'auth'})
-        this.authService = new AuthService()
-    }
+	constructor() {
+		super({ title: 'Auth' })
+		this.authService = new AuthService()
+	}
 
-    #validateFields(formValues){
-        const emailLabel = $M(this.element).find('input:first-child')
-        const passwordLabel = $M(this.element).find('#second')
+	#validateFields(formValues) {
+		const emailLabel = $M(this.element).find('label:first-child')
+		const passwordLabel = $M(this.element).find('label:last-child')
 
-        if (!formValues.email){
-            validationService.showError(emailLabel)
-        }
+		if (!formValues.email) {
+			validationService.showError(emailLabel)
+		}
 
-        if (!formValues.password){
-            validationService.showError(passwordLabel)
-        }
+		if (!formValues.password) {
+			validationService.showError(passwordLabel)
+		}
 
-        return formValues.email && formValues.password
-    }
+		return formValues.email && formValues.password
+	}
 
-    #handleSubmit = event => {
-        const formValues = formService.getFormValues(event.target)
+	#handleSubmit = event => {
+		const formValues = formService.getFormValues(event.target)
+		if (!this.#validateFields(formValues)) return
 
-        if(!this.#validateFields(formValues)) return
-        
-        const type = this.#isTypeLogin ? 'login' : 'register'
-        this.authService.main(type, formValues)
-    }
+		const type = this.#isTypeLogin ? 'login' : 'register'
+		this.authService.main(type, formValues)
+	}
 
-    #changeFormType = event => {
-        event.preventDefault()
+	#changeFormType = event => {
+		event.preventDefault()
 
+		$M(this.element)
+			.find('h1')
+			.text(this.#isTypeLogin ? 'Register' : 'Sign In')
 
-        $M(this.element).find('h1').text(this.#isTypeLogin ? 'Register': 'Sign In')
+		$M(event.target).text(this.#isTypeLogin ? 'Sign In' : 'Register')
 
-        $M(event.target).text(this.#isTypeLogin ? 'Sign In' : 'Register')
-        this.#isTypeLogin = !this.#isTypeLogin
-    }
+		this.#isTypeLogin = !this.#isTypeLogin
+	}
 
-    render(){
-        this.element = RenderService.htmlToElement(template, [
-            new Button({ children: 'Submit' })
-        ], styles);
+	render() {
+		this.element = renderService.htmlToElement(
+			template,
+			[
+				new Button({
+					children: 'Submit'
+				})
+			],
+			styles
+		)
 
-        $M(this.element)
-            .find('#auth-inputs')
-            .append(
-                new Field({
-                    placeholder: 'Enter email',
-                    name: 'email',
-                    type: 'email'
-                }).render()
-            )
-            .append(
-                new Field({
-                    placeholder: 'Enter password',
-                    name: 'password',
-                    type: 'password',
-                    id: 'second'
-                }).render()
-            )
+		$M(this.element)
+			.find('#auth-inputs')
+			.append(
+				new Field({
+					placeholder: 'Enter email',
+					name: 'email',
+					type: 'email'
+				}).render()
+			)
+			.append(
+				new Field({
+					placeholder: 'Enter password',
+					name: 'password',
+					type: 'password'
+				}).render()
+			)
 
-        $M(this.element)
-            .find('#change-form-type')
-            .click(this.#changeFormType)
+		$M(this.element).find('#change-form-type').click(this.#changeFormType)
 
-        $M(this.element).find('form').submit(this.#handleSubmit)
+		$M(this.element).find('form').submit(this.#handleSubmit)
 
-        return this.element;
-    }
+		return this.element
+	}
 }

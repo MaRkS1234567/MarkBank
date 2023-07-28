@@ -1,14 +1,16 @@
-import { markQuery } from "@/core/mark-query/mark-query.lib"
+import { redQuery } from '@/core/red-query/red-query.lib'
 
 export class TransactionService {
-    #BASE_URL = '/transaction'
+	#BASE_URL = '/transactions'
 
-    getAll(onSuccess) {
-        return markQuery({
-            path: this.#BASE_URL + `?${new URLSearchParams({
-                orderBy: 'desc'
-            })}`,
-            onSuccess
-        })
-    }
+	getAll(onSuccess) {
+		return redQuery({
+			path:
+				this.#BASE_URL +
+				`?${new URLSearchParams({
+					orderBy: 'desc'
+				})}`,
+			onSuccess
+		})
+	}
 }

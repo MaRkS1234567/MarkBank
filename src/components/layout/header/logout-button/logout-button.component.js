@@ -1,27 +1,31 @@
-import ChildComponent from "@/core/component/child-screen.component";import RenderService from "@/core/services/render.service";
-import template from './logout-button.template.html'
+import ChildComponent from '@/core/component/child.component'
+import { $M } from '@/core/rquery/rquery.lib'
+import renderService from '@/core/services/render.service'
+import { Store } from '@/core/store/store'
+
 import styles from './logout-button.module.scss'
-import { $M } from "@/core/mquery/mquery.lib";
-import { Store } from "@/core/store/store";
+import template from './logout-button.template.html'
 
 export class LogoutButton extends ChildComponent {
-    constructor({router}){
-        super()
-        this.router = router
+	constructor({ router }) {
+		super()
 
-        this.store = Store.getInstance()
-        this.user = this.store.state.user
-    }
-    render(){
-        this.element = RenderService.htmlToElement(template, [], styles);
+		this.store = Store.getInstance()
+		this.user = this.store.state.user
 
-        $M(this.element).find('button').click(
-            () => {
-                this.store.logout()
-                this.router.navigate('/auth')
-            }
-        )
+		this.router = router
+	}
 
-        return this.element;
-    }
+	render() {
+		this.element = renderService.htmlToElement(template, [], styles)
+
+		$M(this.element)
+			.find('button')
+			.click(() => {
+				this.store.logout()
+				this.router.navigate('/auth')
+			})
+
+		return this.element
+	}
 }
